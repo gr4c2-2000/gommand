@@ -1,7 +1,7 @@
 
 dist/
-!bin/
 bin/*
+!bin/.gitkeep
 cmd/*/*
 !cmd/*/main.go
 cmd/test/*
