@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "github.com/gr4c2-2000/gommand/internal/proto";
+
+service Gommand {
+    rpc ExecCommand (Command) returns (CommandResult) {}
+    rpc CommandList (Empty) returns (CommandListResult) {}
+}
+
+message Command {
+    string command = 1; 
+    string workDir = 2;
+}
+
+message CommandResult {
+    string stdout = 1;
+    string stdErr = 2;
+    string command = 3;
+}
+
+message Managment {
+    string commandName = 1;
+    repeated string args =2; 
+}
+
+message CommandListResult {
+    repeated CommandTmp items = 1;
+}
+
+message CommandTmp {
+    string name = 1;
+	string execTmp = 2;
+	repeated string defaultArgs = 3;
+	string wrapperName = 4;
+	string timeout = 5;
+	bool sync = 6;
+	string actionName = 7;
+	string shell = 8;
+    string workDir = 9;
+
+}
+
+message Empty {
+
+}

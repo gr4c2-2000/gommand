@@ -1,0 +1,10 @@
+
+dist/
+!bin/
+bin/*
+cmd/*/*
+!cmd/*/main.go
+cmd/test/*
+static/*
+storage/*
+.goreleaser.yaml
