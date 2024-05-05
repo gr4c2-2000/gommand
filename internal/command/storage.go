@@ -19,7 +19,7 @@ type Storage struct {
 
 func InitStorage() *Storage {
 	s := &Storage{commandMap: make(map[string]Command)}
-	s.path = "../../storage/"
+	s.path = "/home/gr4c2/go/src/github.com/gr4c2-2000/gommand/storage/"
 	s.Discover(s.path)
 	s.Watch()
 	return s

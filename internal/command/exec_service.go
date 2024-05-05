@@ -16,12 +16,28 @@ func NewExecService(s *Storage) *ExecService {
 	return &es
 }
 
-func (es *ExecService) ExecServiceStrategy(shellCall string, workDir string) (*ExecCommandResult, error) {
+func (es *ExecService) GetCommandInfo(stdin string) (*CommandInfo, error) {
+	ci := new(CommandInfo)
+	var err error
+	ci.Command, err = es.Storage.FindCommand(stdin)
+	if err != nil {
+		return nil, err
+	}
+	ci.ExecutableCommand, err = es.recursiveWrapping(ci.Command)
+	if err != nil {
+		return nil, err
+	}
+
+	return ci, nil
+
+}
+
+func (es *ExecService) ExecServiceStrategy(stdin string, workDir string) (*ExecCommandResult, error) {
 	var cmdstr string
 	WrapDeffer := func() {}
 	ctx := context.Background()
 
-	command, err := es.Storage.FindCommand(shellCall)
+	command, err := es.Storage.FindCommand(stdin)
 	if err != nil {
 		return nil, err
 	}

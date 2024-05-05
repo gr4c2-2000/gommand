@@ -35,6 +35,22 @@ func mapCommandToCommandTmp(c Command, name string) *proto.CommandTmp {
 	return res
 }
 
+func mapCommandTmpToCommand(c *proto.CommandTmp) *Command {
+	res := new(Command)
+	res.ActionName = c.ActionName
+	res.DefaultArgs = c.DefaultArgs
+	res.ExecTmp = c.ExecTmp
+	res.Shell = c.Shell
+	res.Sync = c.Sync
+	res.WrapperName = c.WrapperName
+	res.WorkDir = c.WorkDir
+	timeout, err := time.ParseDuration(c.Timeout)
+	if err == nil {
+		res.Timeout = timeout
+	}
+	return res
+}
+
 func SplitSpecial(s string) []string {
 	specialRuns := []rune{'\'', '"'}
 	var specialCharLock bool

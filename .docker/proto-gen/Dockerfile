@@ -14,9 +14,12 @@ ENV PROTOC_FILE=protoc-21.12-linux-x86_64.zip
 RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v${GEN_GO_VERSION} && \
     go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v${GEN_GO_GRPC_VERSION} && \
     apt-get update -y && apt-get install -y protobuf-compiler --no-install-recommends && \
-    apt-get clean
-
+    apt-get install -y git && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
+# Disable VCS stamping
+ENV GOFLAGS=-buildvcs=false
 # Define environment variables
 ENV PATH="$PATH:/go/bin"

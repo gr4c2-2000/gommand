@@ -9,7 +9,7 @@ type ExecCommandResult struct {
 }
 
 func FromGrpc(p *proto.CommandResult) *ExecCommandResult {
-	return &ExecCommandResult{Stdout: p.Stdout, Stderr: p.StdErr, Command: p.Command}
+	return &ExecCommandResult{Stdout: p.Stdout, Stderr: p.StdErr}
 }
 
 func (e *ExecCommandResult) ToGrpc() *proto.CommandResult {
@@ -17,6 +17,6 @@ func (e *ExecCommandResult) ToGrpc() *proto.CommandResult {
 	if e.Err != nil {
 		stdErr = stdErr + "\n" + e.Err.Error()
 	}
-	cr := proto.CommandResult{Stdout: e.Stdout, StdErr: stdErr, Command: e.Command}
+	cr := proto.CommandResult{Stdout: e.Stdout, StdErr: stdErr}
 	return &cr
 }

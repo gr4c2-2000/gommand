@@ -28,8 +28,17 @@ func NewClient() (*Client, error) {
 	return &c, nil
 }
 
-func (c *Client) Exec(ctx context.Context, name string, workDir string) (*command.ExecCommandResult, error) {
-	grpcCommand := proto.Command{Command: name, WorkDir: workDir}
+func (c *Client) Info(ctx context.Context, stdIn, workDir string) (*proto.CommandInfoResult, error) {
+	grpcInfo := proto.Input{StdIn: stdIn, WorkDir: workDir}
+	res, err := c.client.CommandInfo(ctx, &grpcInfo)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (c *Client) Exec(ctx context.Context, stdin, workDir string) (*command.ExecCommandResult, error) {
+	grpcCommand := proto.Command{StdIn: stdin, WorkDir: workDir}
 	res, err := c.client.ExecCommand(ctx, &grpcCommand)
 	if err != nil {
 		return nil, err

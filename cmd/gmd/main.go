@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"strings"
 	"time"
 
+	"github.com/gr4c2-2000/gommand/internal/command"
 	"github.com/gr4c2-2000/gommand/internal/grpc"
 	"github.com/spf13/cobra"
 )
@@ -71,8 +73,55 @@ func (a *App) GetDefault() *cobra.Command {
 }
 
 func (a *App) exec(args []string, workDir string) {
+	commandInfoProto, err := a.grpcClient.Info(context.Background(), strings.Join(args, " "), workDir)
+	if err != nil {
+		//TODO : Change to stderr
+		log.Fatal(err)
+	}
+	commandInfo := command.CommandInfoFromGrpc(commandInfoProto)
+	a.ExecCommand(commandInfo, args, workDir)
+}
+
+func (a *App) ExecCommand(commandInfo *command.CommandInfo, args []string, workDir string) {
+	if commandInfo.Command.Sync {
+		a.execSync(commandInfo, args, workDir)
+		return
+	}
+	a.execAsync(args, workDir)
+}
+
+func (a *App) execSync(commandInfo *command.CommandInfo, args []string, workDir string) {
+	// Execute the command
+	cmd := exec.CommandContext(context.Background(), commandInfo.Command.Shell, "-c", commandInfo.ExecutableCommand)
+
+	// Set the standard input/output of the command to the current process's
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	if workDir != "" {
+		cmd.Dir = workDir
+	}
+
+	// Start the command
+	err := cmd.Start()
+	if err != nil {
+		fmt.Println("Error executing command:", err)
+		return
+	}
+
+	// Wait for the command to finish
+	err = cmd.Wait()
+	if err != nil {
+		fmt.Println("Command finished with error:", err)
+		return
+	}
+
+}
+func (a *App) execAsync(args []string, workDir string) {
 	execCommandResult, err := a.grpcClient.Exec(context.Background(), strings.Join(args, " "), workDir)
 	if err != nil {
+		//TODO : Change to stderr
 		log.Fatal(err)
 
 	}
@@ -85,6 +134,7 @@ func (a *App) exec(args []string, workDir string) {
 	fmt.Println(execCommandResult.Command)
 	fmt.Println(execCommandResult.Stdout)
 	fmt.Print(execCommandResult.Stderr)
+
 }
 
 func (a *App) GenerateCommands() []*cobra.Command {

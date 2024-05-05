@@ -20,3 +20,11 @@ path/to/the/repo/bin/activate-window code
 ```
 
 this will rotate focus/ontop app window between all open visual studio code instances.
+
+### TODO
+
+- activate-window : add property to bring app to defined screen 
+- gommand : add sync/async recognition on gmd level and if sync run it in gmd.
+Needed to use like normal alias.
+NOTE: It is nesesery  to emulate terminal on some how switch user to newly generated pid.
+- gommand : podzielić logike na dwa etapy : command info który zwróci informację o finalnej wartości komendy i exec który przyjmie tylko komende niezależnie od zawartości. 

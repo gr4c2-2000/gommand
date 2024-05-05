@@ -19,6 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
+	Gommand_CommandInfo_FullMethodName = "/proto.Gommand/CommandInfo"
 	Gommand_ExecCommand_FullMethodName = "/proto.Gommand/ExecCommand"
 	Gommand_CommandList_FullMethodName = "/proto.Gommand/CommandList"
 )
@@ -27,6 +28,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GommandClient interface {
+	CommandInfo(ctx context.Context, in *Input, opts ...grpc.CallOption) (*CommandInfoResult, error)
 	ExecCommand(ctx context.Context, in *Command, opts ...grpc.CallOption) (*CommandResult, error)
 	CommandList(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*CommandListResult, error)
 }
@@ -37,6 +39,15 @@ type gommandClient struct {
 
 func NewGommandClient(cc grpc.ClientConnInterface) GommandClient {
 	return &gommandClient{cc}
+}
+
+func (c *gommandClient) CommandInfo(ctx context.Context, in *Input, opts ...grpc.CallOption) (*CommandInfoResult, error) {
+	out := new(CommandInfoResult)
+	err := c.cc.Invoke(ctx, Gommand_CommandInfo_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *gommandClient) ExecCommand(ctx context.Context, in *Command, opts ...grpc.CallOption) (*CommandResult, error) {
@@ -61,6 +72,7 @@ func (c *gommandClient) CommandList(ctx context.Context, in *Empty, opts ...grpc
 // All implementations must embed UnimplementedGommandServer
 // for forward compatibility
 type GommandServer interface {
+	CommandInfo(context.Context, *Input) (*CommandInfoResult, error)
 	ExecCommand(context.Context, *Command) (*CommandResult, error)
 	CommandList(context.Context, *Empty) (*CommandListResult, error)
 	mustEmbedUnimplementedGommandServer()
@@ -70,6 +82,9 @@ type GommandServer interface {
 type UnimplementedGommandServer struct {
 }
 
+func (UnimplementedGommandServer) CommandInfo(context.Context, *Input) (*CommandInfoResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CommandInfo not implemented")
+}
 func (UnimplementedGommandServer) ExecCommand(context.Context, *Command) (*CommandResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExecCommand not implemented")
 }
@@ -87,6 +102,24 @@ type UnsafeGommandServer interface {
 
 func RegisterGommandServer(s grpc.ServiceRegistrar, srv GommandServer) {
 	s.RegisterService(&Gommand_ServiceDesc, srv)
+}
+
+func _Gommand_CommandInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Input)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GommandServer).CommandInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Gommand_CommandInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GommandServer).CommandInfo(ctx, req.(*Input))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Gommand_ExecCommand_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -132,6 +165,10 @@ var Gommand_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "proto.Gommand",
 	HandlerType: (*GommandServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CommandInfo",
+			Handler:    _Gommand_CommandInfo_Handler,
+		},
 		{
 			MethodName: "ExecCommand",
 			Handler:    _Gommand_ExecCommand_Handler,

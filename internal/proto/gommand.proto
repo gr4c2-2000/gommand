@@ -5,19 +5,29 @@ package proto;
 option go_package = "github.com/gr4c2-2000/gommand/internal/proto";
 
 service Gommand {
+    rpc CommandInfo (Input) returns (CommandInfoResult) {}
     rpc ExecCommand (Command) returns (CommandResult) {}
     rpc CommandList (Empty) returns (CommandListResult) {}
 }
 
-message Command {
-    string command = 1; 
+message Input {
+    string stdIn = 1; 
     string workDir = 2;
+}
+
+message Command {
+    string stdIn = 1; 
+    string workDir = 2;
+}
+
+message CommandInfoResult {
+    string executableCommand = 1;
+    CommandTmp commandTmp = 2;
 }
 
 message CommandResult {
     string stdout = 1;
     string stdErr = 2;
-    string command = 3;
 }
 
 message Managment {

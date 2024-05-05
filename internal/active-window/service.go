@@ -1,6 +1,7 @@
 package activewindow
 
 import (
+	"errors"
 	"log"
 
 	"github.com/BurntSushi/xgb/xproto"
@@ -18,10 +19,10 @@ func InitService(storage *Storage, x11Client *X11Client) *Service {
 func (ser *Service) Next(appName string) error {
 	apps, err := ser.X11Client.Find(appName)
 	if err != nil {
-		return nil
+		return err
 	}
 	if len(apps) == 0 {
-		return nil
+		return errors.New("NO RUNNING APPS")
 	}
 	var id xproto.Window
 
