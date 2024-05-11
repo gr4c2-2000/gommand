@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -11,11 +10,9 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println(os.Args)
-		fmt.Println("NO ARGS")
-		os.Exit(1)
+		log.Fatal("NO ARGS")
 	}
-	st, err := activewindow.InitStorage("./storage.json")
+	st, err := activewindow.InitStorage("./.gommand-activate-window.storage")
 	if err != nil {
 		log.Fatal(err)
 	}
