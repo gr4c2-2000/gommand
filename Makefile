@@ -27,4 +27,3 @@ go_build_server:
 go_build_gmd: 
 	$(GO_BUILD) $(CMD_MAIN)
 
-

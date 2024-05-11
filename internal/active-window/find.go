@@ -56,10 +56,8 @@ func (x11 *X11Client) SetWindow(wid xproto.Window) error {
 		return err
 	}
 	currentDesktop, err := ewmh.CurrentDesktopGet(x11.con)
-	if err != nil {
-		return err
-	}
-	if appDesktop != currentDesktop {
+
+	if appDesktop != currentDesktop && err == nil {
 		ewmh.CurrentDesktopReq(x11.con, int(appDesktop))
 	}
 
