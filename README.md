@@ -21,6 +21,16 @@ path/to/the/repo/bin/activate-window code
 
 this will rotate focus/ontop app window between all open visual studio code instances.
 
+## activate-window fallback
+
+Yu can use a fallback command if there is no running window find.
+to do so just add another parameter.
+It makes activate-window to run a app when he did not found open window.
+
+```sh
+path/to/the/repo/bin/activate-window code code
+```
+
 ### TODO
 
 - activate-window : add property to bring app to defined screen 

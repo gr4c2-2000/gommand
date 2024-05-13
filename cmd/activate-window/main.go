@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	activewindow "github.com/gr4c2-2000/gommand/internal/active-window"
+	"github.com/gr4c2-2000/gommand/internal/command"
 )
 
 func main() {
@@ -23,6 +24,13 @@ func main() {
 	defer x11.Close()
 	service := activewindow.InitService(st, x11)
 	err = service.Next(strings.TrimSpace(os.Args[1]))
+	if err == nil || len(os.Args) < 3 {
+		return
+	}
+
+	dir, _ := os.Getwd()
+
+	err = command.ExecSync("bash", os.Args[2], os.Args[2:], dir)
 	if err != nil {
 		log.Fatal(err)
 	}

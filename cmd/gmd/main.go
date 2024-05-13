@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"strings"
 	"time"
 
@@ -28,14 +27,6 @@ func main() {
 	RootCmd.AddCommand(app.GenerateCommands()...)
 	defer app.grpcClient.Close()
 
-	// f, err := os.OpenFile("access.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// defer f.Close()
-
-	// log.Default().SetOutput(f)
-	// log.Default().Printf("args:%v", os.Args)
 	RootCmd.AddCommand(app.GetDefault())
 
 	cmd, _, err := RootCmd.Find(os.Args[1:])
@@ -91,33 +82,16 @@ func (a *App) ExecCommand(commandInfo *command.CommandInfo, args []string, workD
 }
 
 func (a *App) execSync(commandInfo *command.CommandInfo, args []string, workDir string) {
-	// Execute the command
-	cmd := exec.CommandContext(context.Background(), commandInfo.Command.Shell, "-c", commandInfo.ExecutableCommand)
-
-	// Set the standard input/output of the command to the current process's
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	if workDir != "" {
-		cmd.Dir = workDir
+	execArgs := []string{}
+	if len(args) > 0 {
+		execArgs = args[1:]
 	}
-
-	// Start the command
-	err := cmd.Start()
+	err := command.ExecSync(commandInfo.Command.Shell, commandInfo.ExecutableCommand, execArgs, workDir)
 	if err != nil {
-		fmt.Println("Error executing command:", err)
-		return
+		log.Fatal(err)
 	}
-
-	// Wait for the command to finish
-	err = cmd.Wait()
-	if err != nil {
-		fmt.Println("Command finished with error:", err)
-		return
-	}
-
 }
+
 func (a *App) execAsync(args []string, workDir string) {
 	execCommandResult, err := a.grpcClient.Exec(context.Background(), strings.Join(args, " "), workDir)
 	if err != nil {
