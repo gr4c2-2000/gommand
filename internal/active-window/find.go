@@ -34,7 +34,6 @@ func (x11 *X11Client) Find(search string) ([]xproto.Window, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(clients)
 	result := make([]xproto.Window, 0)
 	for _, wid := range clients {
 
@@ -67,17 +66,8 @@ func (x11 *X11Client) SetWindow(wid xproto.Window) error {
 	}
 	return nil
 }
+
 func (x11 *X11Client) ActiveWindow() (uint32, error) {
 	wid, err := ewmh.ActiveWindowGet(x11.con)
 	return uint32(wid), err
 }
-
-// func (x11 *X11Client) Get() {
-// 	c, _ := ewmh.DesktopViewportGet(x11.con)
-// 	//s, _ := ewmh.SupportedGet(x11.con)
-// 	d, err := ewmh.DesktopLayoutGet(x11.con)
-// 	fmt.Printf("%+v", c)
-// 	//fmt.Printf("%+v", s)
-// 	fmt.Printf("%+v", d)
-// 	fmt.Printf("%+v", err)
-// }

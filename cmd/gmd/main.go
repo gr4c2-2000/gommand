@@ -23,6 +23,8 @@ type App struct {
 }
 
 func main() {
+	// WAŻNE APKA WYCINA APOSTROFY
+	fmt.Println(os.Args)
 	app := AppInit()
 	RootCmd.AddCommand(app.GenerateCommands()...)
 	defer app.grpcClient.Close()
@@ -64,6 +66,7 @@ func (a *App) GetDefault() *cobra.Command {
 }
 
 func (a *App) exec(args []string, workDir string) {
+
 	commandInfoProto, err := a.grpcClient.Info(context.Background(), strings.Join(args, " "), workDir)
 	if err != nil {
 		//TODO : Change to stderr
@@ -86,6 +89,7 @@ func (a *App) execSync(commandInfo *command.CommandInfo, args []string, workDir 
 	if len(args) > 0 {
 		execArgs = args[1:]
 	}
+	fmt.Printf("%+v", commandInfo.ExecutableCommand)
 	err := command.ExecSync(commandInfo.Command.Shell, commandInfo.ExecutableCommand, execArgs, workDir)
 	if err != nil {
 		log.Fatal(err)

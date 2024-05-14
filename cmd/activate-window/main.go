@@ -23,9 +23,13 @@ func main() {
 	}
 	defer x11.Close()
 	service := activewindow.InitService(st, x11)
-	err = service.Next(strings.TrimSpace(os.Args[1]))
-	if err == nil || len(os.Args) < 3 {
+	err = service.Set(strings.TrimSpace(os.Args[1]))
+	if err == nil {
 		return
+	}
+
+	if err != nil && len(os.Args) < 3 {
+		log.Fatal(err)
 	}
 
 	dir, _ := os.Getwd()
